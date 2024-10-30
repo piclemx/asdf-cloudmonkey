@@ -2,7 +2,6 @@
 
 set -euo pipefail
 
-# TODO: Ensure this is the correct GitHub homepage where releases can be downloaded for cloudmonkey.
 GH_REPO="https://github.com/apache/cloudstack-cloudmonkey"
 TOOL_NAME="cloudmonkey"
 TOOL_TEST="--help"
@@ -31,21 +30,52 @@ list_github_tags() {
 }
 
 list_all_versions() {
-	# TODO: Adapt this. By default we simply list the tag names from GitHub releases.
-	# Change this function if cloudmonkey has other means of determining installable versions.
 	list_github_tags
 }
 
+get_arch() {
+  local arch=$(uname -m)
+  case $arch in
+  amd64 | x86_64)
+    echo "x86-64"
+    ;;
+  arm64)
+    echo "arm64"
+    ;;
+  *)
+    echo ""
+    ;;
+  esac
+}
+
+get_platform() {
+  [ "Linux" = "$(uname)" ] && echo "unknown-linux-gnu" || echo "darwin"
+}
+
 download_release() {
-	local version filename url
-	version="$1"
-	filename="$2"
+    local version filename arch platform archive url
+    version="$1"
+    filename="$2"
 
-	# TODO: Adapt the release URL convention for cloudmonkey
-	url="$GH_REPO/archive/v${version}.tar.gz"
+    arch=$(get_arch)
+    if [ -z "$arch" ]; then
+        fail "Unsupported architecture: $arch"
+    fi
+    echo "Detected architecture: $arch"
 
-	echo "* Downloading $TOOL_NAME release $version..."
-	curl "${curl_opts[@]}" -o "$filename" -C - "$url" || fail "Could not download $url"
+    platform=$(get_platform)
+    if [ -z "$platform" ]; then
+        fail "Unsupported platform: $platform"
+    fi
+    echo "Detected platform: $platform"
+    # https://github.com/apache/cloudstack-cloudmonkey/releases/download/6.4.0/cmk.darwin.arm64
+    archive="cmk-${platform}-${platform}.tar.gz"
+    url="$GH_REPO/releases/download/${version}/${archive}"
+
+    echo "* Downloading $TOOL_NAME release $version..."
+    echo "* Fetching release asset ${archive} on GitHub..."
+
+    curl "${curl_opts[@]}" -o "$filename" -C - "$url" || fail "Could not download $url"
 }
 
 install_version() {
