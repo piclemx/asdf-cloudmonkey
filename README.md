@@ -43,7 +43,7 @@ asdf install cloudmonkey latest
 asdf global cloudmonkey latest
 
 # Now cloudmonkey commands are available
---help
+cmk help
 ```
 
 Check [asdf](https://github.com/asdf-vm/asdf) readme for more instructions on how to
