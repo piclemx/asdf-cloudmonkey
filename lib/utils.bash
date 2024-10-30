@@ -34,49 +34,50 @@ list_all_versions() {
 }
 
 get_arch() {
-  local arch=$(uname -m)
-  case $arch in
-  amd64 | x86_64)
-    echo "x86-64"
-    ;;
-  arm64)
-    echo "arm64"
-    ;;
-  *)
-    echo ""
-    ;;
-  esac
+	local arch=
+	arch=$(uname -m)
+	case $arch in
+	amd64 | x86_64)
+		echo "x86-64"
+		;;
+	arm64)
+		echo "arm64"
+		;;
+	*)
+		echo ""
+		;;
+	esac
 }
 
 get_platform() {
-   [ "Linux" = "$(uname)" ] && echo "linux" || echo "darwin"
+	[ "Linux" = "$(uname)" ] && echo "linux" || echo "darwin"
 }
 
 download_release() {
-    local version filename arch platform archive url
-    version="$1"
-    filename="$2"
+	local version filename arch platform archive url
+	version="$1"
+	filename="$2"
 
-    arch=$(get_arch)
-    if [ -z "$arch" ]; then
-        fail "Unsupported architecture: $arch"
-    fi
-    echo "Detected architecture: $arch"
+	arch=$(get_arch)
+	if [ -z "$arch" ]; then
+		fail "Unsupported architecture: $arch"
+	fi
+	echo "Detected architecture: $arch"
 
-    platform=$(get_platform)
-    if [ -z "$platform" ]; then
-        fail "Unsupported platform: $platform"
-    fi
-    echo "Detected platform: $platform"
+	platform=$(get_platform)
+	if [ -z "$platform" ]; then
+		fail "Unsupported platform: $platform"
+	fi
+	echo "Detected platform: $platform"
 
-    archive="cmk.${platform}.${arch}"
-    url="$GH_REPO/releases/download/${version}/${archive}"
+	archive="cmk.${platform}.${arch}"
+	url="$GH_REPO/releases/download/${version}/${archive}"
 
-    echo "* Downloading $TOOL_NAME release $version..."
-    echo "* Fetching release asset ${archive} on GitHub..."
-    echo "* File is located here $filename"
+	echo "* Downloading $TOOL_NAME release $version..."
+	echo "* Fetching release asset ${archive} on GitHub..."
+	echo "* File is located here $filename"
 
-    curl "${curl_opts[@]}" -o "$filename" -C - "$url" || fail "Could not download $url"
+	curl "${curl_opts[@]}" -o "$filename" -C - "$url" || fail "Could not download $url"
 }
 
 install_version() {
