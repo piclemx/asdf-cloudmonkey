@@ -3,7 +3,7 @@
 set -euo pipefail
 
 # TODO: Ensure this is the correct GitHub homepage where releases can be downloaded for cloudmonkey.
-GH_REPO="https://github.com/piclemx/asdf-cloudmonkey"
+GH_REPO="https://github.com/apache/cloudstack-cloudmonkey"
 TOOL_NAME="cloudmonkey"
 TOOL_TEST="--help"
 
